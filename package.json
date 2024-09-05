@@ -2,7 +2,7 @@
   "name": "receipts",
   "version": "1.0.0",
   "description": "A discord bot that processes receipts and turns them into an invoice embed. It uses GPT-4o Vision to process the receipts.",
-  "main": "src/index.ts",
+  "main": "index.js",
   "scripts": {
     "dev": "nodemon src/index.ts",
     "build": "tsc",
