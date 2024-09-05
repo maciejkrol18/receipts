@@ -13,16 +13,15 @@ COPY tsconfig.json ./
 COPY config.ts ./
 COPY src ./src
 
+# (1) List contents of /usr/src/bot for debugging
+RUN ls -la /usr/src/bot
+
 # Compile TypeScript to JavaScript
 RUN pnpm run build
 
-# Remove source files and devDependencies
-RUN rm -rf src
-RUN pnpm prune --prod
-
 COPY . /usr/src/bot
 
-# List contents of /usr/src/bot for debugging
+# (2) List contents of /usr/src/bot for debugging
 RUN ls -la /usr/src/bot
 
 ENV NODE_ENV production
