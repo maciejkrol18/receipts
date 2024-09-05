@@ -40,4 +40,4 @@ EXPOSE 3001
 
 ENV PORT 3001
 
-CMD HOSTNAME="0.0.0.0" node src/index.js
+CMD HOSTNAME="0.0.0.0" node src/dist/index.js
