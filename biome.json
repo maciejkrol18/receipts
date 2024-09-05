@@ -8,12 +8,12 @@
     "lineEnding": "lf",
     "lineWidth": 90,
     "attributePosition": "auto",
-    "ignore": ["node_modules/**"]
+    "ignore": ["node_modules/**", "dist/**"]
   },
   "organizeImports": { "enabled": true },
   "linter": {
     "enabled": true,
-    "ignore": ["node_modules/**"]
+    "ignore": ["node_modules/**", "dist/**"]
   },
   "javascript": {
     "formatter": {

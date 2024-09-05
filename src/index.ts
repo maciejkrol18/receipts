@@ -58,7 +58,7 @@ client.on(Events.MessageCreate, async (message) => {
       )
       .addFields({
         name: locales[config.locale].TOTAL_AMOUNT_DUE,
-        value: `${total.toString()}${config.currency}`,
+        value: `${total.toFixed(2).toString()}${config.currency}`,
       })
 
     if (SEND_MODE === 'channel') {
@@ -82,9 +82,10 @@ client.on(Events.MessageCreate, async (message) => {
         await client.users.send(process.env.DM_RECIPIENT_ID, {
           embeds: [replyEmbed],
         })
-        message.reply(
-          `${locales[config.locale].DM_SUCCESS} <@${process.env.DM_RECIPIENT_ID}>`,
-        )
+        message.reply({
+          content: `${locales[config.locale].DM_SUCCESS} <@${process.env.DM_RECIPIENT_ID}>`,
+          embeds: [replyEmbed],
+        })
       } catch (err) {
         logger(
           `Command "!new" failed in ${SEND_MODE} mode: ${err.rawError.message}`,
