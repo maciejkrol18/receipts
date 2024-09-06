@@ -10,8 +10,7 @@
     "experimentalDecorators": true,
     "allowSyntheticDefaultImports": true,
     "declaration": false,
-    "outDir": "dist",
-    "rootDir": "src"
+    "outDir": "dist"
   },
   "include": ["src"],
   "exclude": ["node_modules", "**/*.spec.ts"]

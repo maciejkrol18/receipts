@@ -18,8 +18,12 @@ const client = new Client({
 
 client.once(Events.ClientReady, (readyClient) => {
   logger(`Ready! Logged in as ${readyClient.user.tag}`, 'info')
-  logger(`Debug mode is ${process.env.DEBUG_MODE ? 'enabled' : 'disabled'}`, 'info')
+  logger(
+    `Debug mode is ${process.env.DEBUG_MODE === 'true' ? 'enabled' : 'disabled'}`,
+    'info',
+  )
   logger(`Send mode is ${SEND_MODE}`, 'info')
+  logger(`DM recipient is ${process.env.DM_RECIPIENT_ID}`, 'info')
 })
 
 client.on(Events.MessageCreate, async (message) => {
