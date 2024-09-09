@@ -8,6 +8,7 @@ interface LocaleSet {
   TOTAL_AMOUNT_DUE: string
   COMMAND_ERROR: string
   DM_SUCCESS: string
+  FAILED_TO_PROCESS: string
 }
 
 export const locales = {
@@ -19,6 +20,7 @@ export const locales = {
     TOTAL_AMOUNT_DUE: 'Total amount due',
     COMMAND_ERROR: 'An error occured while running the command',
     DM_SUCCESS: 'Successfully sent the data to the user',
+    FAILED_TO_PROCESS: 'Amount of images which failed to process',
   },
   pl_PL: {
     EMBED_TITLE: 'Nowe rozliczenie od',
@@ -28,5 +30,6 @@ export const locales = {
     TOTAL_AMOUNT_DUE: 'Kwota do zapłaty',
     COMMAND_ERROR: 'Wystąpił błąd podczas uruchamiania komendy',
     DM_SUCCESS: 'Pomyślnie wysłano dane do użytkownika',
+    FAILED_TO_PROCESS: 'Ilość obrazów, których nie udało się przetworzyć',
   },
 } satisfies Record<Locale, LocaleSet>

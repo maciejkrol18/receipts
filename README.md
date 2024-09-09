@@ -31,10 +31,32 @@ OPENAI_KEY=your-openai-key
 # Useful for testing whether the embed configuration is valid without using openai credits
 DEBUG_MODE=boolean
 ```
-2. In the `config.ts` file, you can change the prompt, locale, and currency. You can modify and add custom locales in the `src/locales/locale.ts` file.
-### Running
+2. Setup the `config.ts` file in the root directory with the following example content:
+```ts
+import type { Locale } from './src/locales/locale'
+
+interface Config {
+  prompt: string
+  locale: Locale
+  currency: string
+}
+
+export default {
+  prompt: `
+    Read the contents of the image. It should be a receipt. If it isn't a receipt just return "Not a receipt." Otherwise, extract the following information:
+    shop - name of the shop
+    products - an array of objects that have a name and price key, corresponding to the names and prices of bought products on the receipt. Prefix each product with an emoji you deem to be most appropiate for the product type
+    Return the data in JSON format. Reply only with the JSON data. Do not use markdown in your response.
+  `,
+  locale: 'pl_PL',
+  currency: 'zł',
+} satisfies Config
+```
+The above is an example of what I use - choose a valid locale code from `src/locales/locale.ts`. The currency is any kind of string you want appended to prices and the total amount due. If you decide to make changes to the prompt, rembember to adjust the `isValidReceiptData` function in `src/process-images.ts` and the `ReceiptData` interface to match the new prompt.
+
+### ✨ Running
 Run the bot with `pnpm start` which will run a nodemon process. There'll be a Dockerfile soon.
-### Troubleshooting
+### 🐞 Troubleshooting
 If you want to use the DM mode, the target user needs to be in the same server as you and the bot. Otherwise, you'll get an error saying that you're unable to send messages to that user.
 If your embed is setup incorrectly, you're most likely to get a "Invalid Form Body" error. Check how the embed is being created, tweak it and try again. The full error message should contain very clear explanation of what's causing the error
 

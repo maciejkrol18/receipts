@@ -6,9 +6,8 @@ import config from '../config'
 // Return dummy object to check if Discord can even reply with the embed
 const DEBUG_MODE = process.env.DEBUG_MODE === 'true'
 
-const dummyObject = {
+const dummyObject: ReceiptData = {
   shop: 'Shop',
-  date: '2023-01-01',
   products: [
     {
       name: 'Product 1',
@@ -19,74 +18,91 @@ const dummyObject = {
       price: 20,
     },
   ],
-  total: 30,
 }
 
 interface ReceiptData {
   shop: string
-  date: string
   products: {
     name: string
     price: number
   }[]
-  total: number
 }
 
+interface ImageProcessingResponse {
+  failures: number
+  data: ReceiptData[]
+}
+
+// Remember to adjust this function's return statement as you change the ReceiptData interface
 function isValidReceiptData(data: unknown): data is ReceiptData {
   const parsedData = JSON.parse(data as string)
   return (
     typeof parsedData === 'object' &&
     parsedData !== null &&
     'shop' in parsedData &&
-    'date' in parsedData &&
-    'products' in parsedData &&
-    'total' in parsedData
+    'products' in parsedData
   )
 }
 
 export default async function processImages(
   attachmentUrls: string[],
-): Promise<ReceiptData[]> {
+): Promise<ImageProcessingResponse> {
   logger('Processing images...', 'info')
 
   if (DEBUG_MODE) {
     logger('Running processImages() in debug mode', 'warn')
-    return [dummyObject]
+    return {
+      failures: 1,
+      data: [dummyObject],
+    }
   }
 
   const openai = new OpenAI({ apiKey: process.env.OPENAI_API_KEY })
-  const response: ReceiptData[] = []
+  const data: ReceiptData[] = []
+  let processingFailures = 0
   await Promise.all(
     attachmentUrls.map(async (url, index) => {
       logger(`Started processing image ${index + 1} of ${attachmentUrls.length}`, 'info')
-      const completion = await openai.chat.completions.create({
-        messages: [
-          {
-            role: 'user',
-            content: [
-              {
-                type: 'text',
-                text: config.prompt,
-              },
-              {
-                type: 'image_url',
-                image_url: {
-                  url: url,
+      try {
+        const completion = await openai.chat.completions.create({
+          messages: [
+            {
+              role: 'user',
+              content: [
+                {
+                  type: 'text',
+                  text: config.prompt,
                 },
-              },
-            ],
-          },
-        ],
-        model: 'gpt-4o-mini',
-      })
-      logger(`Finished processing image ${index + 1} of ${attachmentUrls.length}`, 'info')
-      if (isValidReceiptData(completion.choices[0].message.content)) {
-        response.push(JSON.parse(completion.choices[0].message.content))
-      } else {
-        logger(`Image ${index + 1} is not a receipt`, 'error')
+                {
+                  type: 'image_url',
+                  image_url: {
+                    url: url,
+                  },
+                },
+              ],
+            },
+          ],
+          model: 'gpt-4o-mini',
+        })
+        logger(
+          `Finished processing image ${index + 1} of ${attachmentUrls.length}`,
+          'info',
+        )
+        if (isValidReceiptData(completion.choices[0].message.content)) {
+          data.push(JSON.parse(completion.choices[0].message.content))
+        } else {
+          logger(`Image ${index + 1} is not a receipt`, 'error')
+          processingFailures += 1
+        }
+      } catch (err) {
+        logger(`Image ${index + 1} failed to process: ${err}`, 'error')
+        processingFailures += 1
       }
     }),
   )
   logger('Finished processing all images', 'info')
-  return response
+  return {
+    failures: processingFailures,
+    data,
+  }
 }

@@ -28,7 +28,6 @@ client.once(Events.ClientReady, (readyClient) => {
 
 client.on(Events.MessageCreate, async (message) => {
   if (message.author.bot) return
-  if (message.content.charAt(0) !== '!') return
 
   if (message.content === '!new') {
     logger(`Received command "!new" from ${message.author.tag}`, 'info')
@@ -40,7 +39,7 @@ client.on(Events.MessageCreate, async (message) => {
       return
     }
 
-    const data = await processImages(attachments.map((attachment) => attachment.url))
+    const result = await processImages(attachments.map((attachment) => attachment.url))
     let total = 0
 
     const replyEmbed = new EmbedBuilder()
@@ -50,8 +49,10 @@ client.on(Events.MessageCreate, async (message) => {
         `${locales[config.locale].CREATED_AT} ${new Date().toLocaleDateString()}`,
       )
       .addFields(
-        data.map((receipt) => {
-          total += receipt.total
+        result.data.map((receipt) => {
+          total += receipt.products
+            .map((product) => product.price)
+            .reduce((a, b) => a + b, 0)
           return {
             name: receipt.shop,
             value: receipt.products
@@ -64,6 +65,12 @@ client.on(Events.MessageCreate, async (message) => {
         name: locales[config.locale].TOTAL_AMOUNT_DUE,
         value: `${total.toFixed(2).toString()}${config.currency}`,
       })
+
+    if (result.failures) {
+      replyEmbed.setFooter({
+        text: `${locales[config.locale].FAILED_TO_PROCESS}: ${result.failures}`,
+      })
+    }
 
     if (SEND_MODE === 'channel') {
       try {
