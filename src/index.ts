@@ -63,7 +63,7 @@ client.on(Events.MessageCreate, async (message) => {
       )
       .addFields({
         name: locales[config.locale].TOTAL_AMOUNT_DUE,
-        value: `${total.toFixed(2).toString()}${config.currency}`,
+        value: `${Number.parseFloat(total.toFixed(2))}${config.currency}`,
       })
 
     if (result.failures) {
