@@ -54,8 +54,6 @@ client.on(Events.MessageCreate, async (message) => {
           total += receipt.products
             .map((product) => product.price)
             .reduce((a, b) => a + b, 0)
-          logger(`Processing receipt #${idx + 1} - total is currently ${total}`, 'info')
-          console.log(receipt)
           return {
             name: receipt.shop,
             value: receipt.products
