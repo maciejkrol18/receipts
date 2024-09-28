@@ -31,13 +31,14 @@ client.on(Events.MessageCreate, async (message) => {
 
   if (message.content === '!new') {
     logger(`Received command "!new" from ${message.author.tag}`, 'info')
-    message.reply(locales[config.locale].STARTED_PROCESSING)
 
     const attachments = message.attachments
     if (attachments.size === 0) {
       message.reply(locales[config.locale].NO_ATTACHMENTS)
       return
     }
+
+    message.reply(locales[config.locale].STARTED_PROCESSING)
 
     const result = await processImages(attachments.map((attachment) => attachment.url))
     let total = 0
@@ -49,10 +50,12 @@ client.on(Events.MessageCreate, async (message) => {
         `${locales[config.locale].CREATED_AT} ${new Date().toLocaleDateString()}`,
       )
       .addFields(
-        result.data.map((receipt) => {
+        result.data.map((receipt, idx) => {
           total += receipt.products
             .map((product) => product.price)
             .reduce((a, b) => a + b, 0)
+          logger(`Processing receipt #${idx + 1} - total is currently ${total}`, 'info')
+          console.log(receipt)
           return {
             name: receipt.shop,
             value: receipt.products

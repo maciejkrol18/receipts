@@ -40,7 +40,11 @@ function isValidReceiptData(data: unknown): data is ReceiptData {
     typeof parsedData === 'object' &&
     parsedData !== null &&
     'shop' in parsedData &&
-    'products' in parsedData
+    'products' in parsedData &&
+    'price' in parsedData.products[0] &&
+    typeof parsedData.products[0].price === 'number' &&
+    'name' in parsedData.products[0] &&
+    typeof parsedData.products[0].name === 'string'
   )
 }
 
